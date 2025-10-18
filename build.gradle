@@ -3,6 +3,7 @@ plugins {
 	//id 'war'
 	id 'org.springframework.boot' version '3.5.5'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id("com.google.cloud.tools.jib") version "3.4.3"
 }
 
 group = 'com.setec'
@@ -42,4 +43,18 @@ implementation 'com.github.pengrad:java-telegram-bot-api:9.2.0'
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+jib {
+	from {
+		image = 'eclipse-temurin:21-jdk-alpine'
+	}
+	to {
+		image = 'myapp:latest' // local image name
+		// Or use registry, e.g. 'registry.gitlab.com/username/project:tag'
+	}
+	container {
+		ports = ['8080']
+		jvmFlags = ['-Xms512m', '-Xmx512m']
+	}
 }

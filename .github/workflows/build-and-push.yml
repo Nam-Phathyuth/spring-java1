@@ -1,0 +1,30 @@
+name: Build & Push Docker Image (Jib)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write  # needed for GHCR
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build and push image with Jib
+        run: ./gradlew jib \
+          -Djib.to.image=ghcr.io/${{ github.repository }}:latest \
+          -Djib.to.auth.username=${{ github.actor }} \
+          -Djib.to.auth.password=${{ secrets.GITHUB_TOKEN }}
